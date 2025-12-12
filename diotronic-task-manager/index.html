@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diotronic Task Manager</title>
+    <link rel="icon" type="image/png" href="logo_noche.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-card">
+            <div class="logo-container">
+                <img id="loginLogo" src="logo.png" alt="Diotronic Logo">
+                <div class="logo-text">Task Manager</div>
+                <div class="logo-subtitle">Sistema de Gestión de Soporte</div>
+            </div>
+            
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div id="loginError" class="error-message hidden"></div>
+                
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="loginEmail" required placeholder="usuario@diotronic.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-login" id="loginBtn">
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #86868B; font-size: 13px;">
+                <p style="color: #a2c125; font-weight: 600;">Ingresa con tus credenciales de Diotronic</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="app-container" id="appContainer">
+        <div class="container">
+            <div class="header">
+                <div class="header-content">
+                    <img id="headerLogo" src="logo.png" alt="Diotronic" class="header-logo">
+                    <div class="header-text">
+                        <h1>Task Manager</h1>
+                        <p>Sistema de Gestión de Soporte Técnico</p>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <span id="userName">Usuario</span>
+                    <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="stats"></div>
+
+            <div class="card">
+                <h2>📥 Exportar Reportes</h2>
+                <div class="btn-group">
+                    <button class="btn-success" onclick="exportToExcelWithTemplate()">📊 Exportar con Molde</button>
+                    <button class="btn-primary" onclick="toggleMonthSelector()">📅 Por Mes (Molde)</button>
+                    <button class="btn-warning" onclick="exportByStatus()">🏷️ Por Estado</button>
+                </div>
+                <div id="monthSelector" class="hidden month-grid"></div>
+            </div>
+
+            <div class="card">
+                <div class="quick-start">
+                    <h3>⚡ Inicio Rápido</h3>
+                    <p style="color: var(--diotronic-blue); margin-bottom: 20px;">La hora se registrará automáticamente</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>👤 Usuario / Servicio</label>
+                            <input type="text" id="quickUser" placeholder="Ej: Juan Pérez - Instalación Office">
+                        </div>
+                        <div class="form-group">
+                            <label>📝 Descripción Breve</label>
+                            <input type="text" id="quickDesc" placeholder="Descripción de la tarea...">
+                        </div>
+                    </div>
+                    <button class="btn-primary btn-large" onclick="startNewTask()" id="startBtn">▶️ Iniciar Tarea Ahora</button>
+                </div>
+
+                <details>
+                    <summary>📋 Registrar Tarea Manual</summary>
+                    <form id="manualForm" onsubmit="addManualTask(event)" style="margin-top: 20px;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fecha</label>
+                                <input type="date" id="manualDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Usuario/Servicio</label>
+                                <input type="text" id="manualUser" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hora Inicio</label>
+                                <input type="time" id="manualStart" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hora Fin</label>
+                                <input type="time" id="manualEnd" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Descripción</label>
+                                <textarea id="manualDesc" required></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">💾 Guardar</button>
+                    </form>
+                </details>
+            </div>
+
+            <div class="card">
+                <h2>📝 Tareas Registradas</h2>
+                <div class="filter-bar">
+                    <select id="monthFilter" onchange="filterTasks()">
+                        <option value="">📅 Todos los meses</option>
+                    </select>
+                    <select id="statusFilter" onchange="filterTasks()">
+                        <option value="">🏷️ Todos los estados</option>
+                        <option value="Completada">✅ Completadas</option>
+                        <option value="En Progreso">⏳ En Progreso</option>
+                        <option value="Suspendida Temporalmente">⏸️ Suspendidas</option>
+                        <option value="Cerrada sin éxito">⚠️ Cerradas sin éxito</option>
+                        <option value="Cancelada">❌ Canceladas</option>
+                    </select>
+                </div>
+                <div id="tasksContainer" style="overflow-x: auto;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏱️</div>
+                        <h3>Cargando...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
