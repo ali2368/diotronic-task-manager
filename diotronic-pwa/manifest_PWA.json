@@ -1,0 +1,36 @@
+{
+  "name": "Diotronic Task Manager",
+  "short_name": "Diotronic",
+  "description": "Sistema de Gestión de Soporte Técnico - Diotronic Costa Rica",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#59acc6",
+  "theme_color": "#59acc6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["productivity", "business", "utilities"],
+  "lang": "es-CR",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
